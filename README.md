@@ -15,7 +15,7 @@ A Agenda de Futebol Amador permite que jogadores e organizadores possam:
 
 ---
 
-## 🚀 Tecnologias Utilizadas
+##  Tecnologias Utilizadas
 
 - **Java 17+**
 - **Spring Boot**
@@ -26,7 +26,7 @@ A Agenda de Futebol Amador permite que jogadores e organizadores possam:
 
 ---
 
-## 🧱 Arquitetura do Projeto
+##  Arquitetura do Projeto
 
 Padrão de projeto baseado nos princípios **SOLID** e **Arquitetura Limpa**. 
 A estrutura do projeto é a seguinte:
