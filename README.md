@@ -1,6 +1,6 @@
 #  Agenda de Futebol Amador
 
-Projeto acadêmico desenvolvido por **Isabela** e **Vitor Mendes** com o objetivo de criar uma aplicação back-end para gerenciar partidas de futebol amador, permitindo que usuários se organizem para jogar "peladas" de forma prática e eficiente.
+Projeto acadêmico desenvolvido por **Isabella Figueiredo** e **Vitor Mendes** com o objetivo de criar uma aplicação back-end para gerenciar partidas de futebol amador, permitindo que usuários se organizem para jogar "peladas" de forma prática e eficiente.
 
 ---
 
