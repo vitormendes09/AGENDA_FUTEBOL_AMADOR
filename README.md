@@ -1,6 +1,6 @@
 #  Agenda de Futebol Amador
 
-Projeto acadêmico desenvolvido por **Isabela** e **Vitor Mendes** com o objetivo de criar uma aplicação back-end para gerenciar partidas de futebol amador, permitindo que usuários se organizem para jogar "peladas" de forma prática e eficiente.
+Projeto acadêmico desenvolvido por **Isabella Figueiredo** e **Vitor Mendes** com o objetivo de criar uma aplicação back-end para gerenciar partidas de futebol amador, permitindo que usuários se organizem para jogar "peladas" de forma prática e eficiente.
 
 ---
 
@@ -26,26 +26,6 @@ A Agenda de Futebol Amador permite que jogadores e organizadores possam:
 
 ---
 
-##  Arquitetura do Projeto
-
-Padrão de projeto baseado nos princípios **SOLID** e **Arquitetura Limpa**. 
-A estrutura do projeto é a seguinte:
-
-src/
-├── contracts/ # Interfaces (DTOs, autenticação, etc)
-├── controller/ # Controladores REST
-├── data/
-│ ├── config/ # Configurações e conexão com banco de dados
-│ ├── models/ # Modelos das entidades persistidas
-│ └── repository/ # Repositórios e persistência de dados
-├── domain/
-│ ├── auth/ # Lógica de autenticação (AuthService, JWT)
-│ ├── entities/ # Entidades do domínio
-│ ├── middlewares/ # Interceptadores e filtros
-│ └── services/ # Regras de negócio e casos de uso
-├── infra/
-│ ├── routes/ # Definição de rotas REST
-│ └── factory/ # Injeções de dependência e criação de serviços
 
 
 ##  Entidades Principais
