@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-AgendaFutebolAmadorApplication<agenda_futebol_amador>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "br.edu.iff.com.agenda_futebol_amador.AgendaFutebolAmadorApplication",
+            "projectName": "agenda_futebol_amador",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
