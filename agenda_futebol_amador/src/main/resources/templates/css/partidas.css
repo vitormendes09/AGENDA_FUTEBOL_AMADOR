@@ -1,0 +1,64 @@
+/* Estilos específicos para a página de busca de partidas */
+
+/* Cards de Partida */
+.partida-card {
+    transition: all 0.3s ease;
+    border: none;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.partida-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    font-weight: 600;
+    padding: 1rem;
+}
+
+.partida-info {
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+}
+
+.partida-info i {
+    width: 20px;
+    text-align: center;
+    margin-right: 10px;
+    color: #6c757d;
+}
+
+/* Barra de busca */
+.search-card {
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.search-card .card-body {
+    padding: 1.5rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .partida-card {
+        margin-bottom: 1.5rem;
+    }
+    
+    .search-card .card-body {
+        padding: 1rem;
+    }
+}
+
+/* Mensagem de nenhum resultado */
+.no-results {
+    padding: 3rem 0;
+}
+
+.no-results .alert {
+    max-width: 600px;
+    margin: 0 auto 1.5rem;
+}

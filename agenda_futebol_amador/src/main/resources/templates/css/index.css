@@ -1,0 +1,103 @@
+/* Estilos gerais */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+}
+
+/* Navbar */
+.navbar-brand {
+    font-weight: 700;
+}
+
+.navbar-brand i {
+    color: #28a745;
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                url('https://images.unsplash.com/photo-1574629810360-7efbbe195018');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 100px 0;
+    margin-bottom: 30px;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+
+.hero-section h1 {
+    font-weight: 800;
+}
+
+/* Cards de Partida */
+.partida-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+    margin-bottom: 20px;
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.partida-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+.card-header {
+    font-weight: 600;
+}
+
+.partida-info {
+    margin-bottom: 0.5rem;
+}
+
+.partida-info i {
+    width: 20px;
+    text-align: center;
+    margin-right: 8px;
+    color: #6c757d;
+}
+
+/* Botões */
+.btn-custom {
+    padding: 10px 25px;
+    font-weight: 600;
+    border-radius: 50px;
+}
+
+.btn-outline-primary {
+    border-radius: 50px;
+}
+
+/* Seção Como Funciona */
+.funcionalidade-icon {
+    margin-bottom: 1rem;
+    color: #fff;
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Footer */
+footer {
+    background-color: #343a40;
+    color: white;
+    padding: 20px 0;
+    margin-top: 50px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 60px 0;
+    }
+    
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+}
