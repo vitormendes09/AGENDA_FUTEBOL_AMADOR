@@ -1,16 +1,14 @@
 package br.edu.iff.com.agenda_futebol_amador.controller.view;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import br.edu.iff.com.agenda_futebol_amador.contracts.controllers.view.IBuscaPartidaController;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-
-import br.edu.iff.com.agenda_futebol_amador.contracts.controllers.view.IBuscarPartidaController;
+import java.util.List;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @Controller
-public class BuscarPartidaController implements IBuscarPartidaController {
+public class BuscarPartidaController implements  IBuscaPartidaController{
+
     
     // Dados mockados - substituir por repository depois
     private static final List<PartidaMock> TODAS_PARTIDAS = Arrays.asList(
@@ -32,7 +30,8 @@ public class BuscarPartidaController implements IBuscarPartidaController {
             partidasEncontradas = TODAS_PARTIDAS.stream()
                 .filter(p -> p.getNome().toLowerCase().contains(termoLower) ||
                              p.getCidade().toLowerCase().contains(termoLower) ||
-                             p.getData().contains(termo))
+                             p.getData().contains(termo) ||
+                             p.getHora().contains(termo))
                 .collect(Collectors.toList());
         }
         

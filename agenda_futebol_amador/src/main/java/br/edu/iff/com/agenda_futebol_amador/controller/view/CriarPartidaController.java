@@ -10,9 +10,8 @@ public class CriarPartidaController implements ICriarPartidaController{
     public String handle(String nome, String data, String hora, 
                              double valor, String status, int numeroJogadores, 
                              Model model) {
-        // Lógica de criação de partida
+        
         model.addAttribute("mensagem", "Partida criada com sucesso!");
         return "redirect:/partidas";
     }
-    
 }
