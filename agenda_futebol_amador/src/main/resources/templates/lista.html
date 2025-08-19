@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Partidas - AgendaFy</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Personalizado -->
+    <link rel="stylesheet" th:href="@{/css/partidas.css}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-futbol me-2"></i>AgendaFy
+            </a>
+            <div class="d-flex">
+                <a href="/login" class="btn btn-outline-light me-2">Login</a>
+                <a href="/registro" class="btn btn-primary">Cadastre-se</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo Principal -->
+    <main class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="mb-0">
+                <i class="fas fa-search me-2"></i>
+                <span th:if="${termoBusca != null and !termoBusca.isEmpty()}">
+                    Resultados para: <span th:text="${termoBusca}"></span>
+                </span>
+                <span th:unless="${termoBusca != null and !termoBusca.isEmpty()}">
+                    Todas as Partidas
+                </span>
+            </h1>
+            <a href="/partidas/nova" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i> Nova Partida
+            </a>
+        </div>
+        
+        <!-- Barra de Busca -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form th:action="@{/partidas/buscar}" method="get" class="row g-3">
+                    <div class="col-md-10">
+                        <input type="search" name="termo" class="form-control form-control-lg" 
+                               th:value="${termoBusca}" placeholder="Busque por nome, cidade ou data...">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-search me-1"></i> Buscar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Lista de Partidas -->
+        <div class="row" th:if="${partidas != null and !partidas.empty}">
+            <div class="col-md-6 col-lg-4 mb-4" th:each="partida : ${partidas}">
+                <div class="card partida-card h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0" th:text="${partida.nome}">Nome da Partida</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="partida-info">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span th:text="${partida.data} + ' às ' + ${partida.hora}">00/00/0000 às 00:00</span>
+                        </div>
+                        <div class="partida-info">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span th:text="${partida.cidade}">Cidade</span>
+                        </div>
+                        <div class="partida-info">
+                            <i class="fas fa-users"></i>
+                            <span th:text="${partida.numeroJogadores} + ' jogadores'">0 jogadores</span>
+                        </div>
+                        <div class="partida-info">
+                            <i class="fas fa-tag"></i>
+                            <span th:text="'R$ ' + ${#numbers.formatDecimal(partida.valor, 1, 2)}">R$ 0,00</span>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="#" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-info-circle me-1"></i> Detalhes
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mensagem quando não há resultados -->
+        <div th:if="${partidas == null or partidas.empty}" class="text-center py-5">
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Nenhuma partida encontrada <span th:if="${termoBusca != null}">para "<span th:text="${termoBusca}"></span>"</span>.
+            </div>
+            <a href="/partidas/buscar" class="btn btn-primary">
+                <i class="fas fa-list me-1"></i> Ver todas as partidas
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-0">
+                &copy; 2024 AgendaFy - Futebol Amador | Desenvolvido por Isabella Figueiredo e Vitor Mendes
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
