@@ -1,6 +1,7 @@
 package br.edu.iff.com.agenda_futebol_amador.services;
 
 import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.Lazy;
 import br.edu.iff.com.agenda_futebol_amador.contracts.entities.IPartida;
 import br.edu.iff.com.agenda_futebol_amador.contracts.entities.IJogador;
 import br.edu.iff.com.agenda_futebol_amador.contracts.services.IJogadorService;
@@ -19,20 +20,17 @@ public class PartidaService implements IPartidaService {
     private final AtomicLong idCounter = new AtomicLong(1);
     private final IJogadorService jogadorService;
 
-    public PartidaService(IJogadorService jogadorService) {
+    // Use @Lazy para quebrar a dependência circular
+    public PartidaService(@Lazy IJogadorService jogadorService) {
         this.jogadorService = jogadorService;
-        
-        // Inicializar com partidas de exemplo
         initializeSampleData();
     }
 
     private void initializeSampleData() {
-        // Buscar algum jogador para ser organizador
+        // Buscar um jogador existente para ser organizador
         Optional<IJogador> organizadorOpt = jogadorService.findAll().stream().findFirst();
         
         if (organizadorOpt.isPresent()) {
-            IJogador organizador = organizadorOpt.get();
-            
             IPartida partida1 = new PartidaEntity(
                 idCounter.getAndIncrement(),
                 "Pelada do Bairro",
@@ -42,23 +40,10 @@ public class PartidaService implements IPartidaService {
                 15.0,
                 10,
                 "PUBLICA",
-                organizador
-            );
-            
-            IPartida partida2 = new PartidaEntity(
-                idCounter.getAndIncrement(),
-                "Torneio Amador",
-                "20/08/2024",
-                "16:00",
-                "Campos dos Goytacazes",
-                25.0,
-                20,
-                "PUBLICA",
-                organizador
+                organizadorOpt.get()
             );
             
             partidas.add(partida1);
-            partidas.add(partida2);
         }
     }
 
@@ -77,14 +62,12 @@ public class PartidaService implements IPartidaService {
     @Override
     public IPartida save(IPartida partida) {
         if (partida.getId() == null) {
-            // Nova partida
             if (partida instanceof PartidaEntity) {
                 ((PartidaEntity) partida).setId(idCounter.getAndIncrement());
             }
             partidas.add(partida);
             return partida;
         } else {
-            // Atualizar partida existente
             return findById(partida.getId())
                     .map(existing -> {
                         existing.setNome(partida.getNome());
@@ -115,7 +98,8 @@ public class PartidaService implements IPartidaService {
     @Override
     public List<IPartida> findByOrganizador(Long organizadorId) {
         return partidas.stream()
-                .filter(partida -> partida.getOrganizador().getId().equals(organizadorId))
+                .filter(partida -> partida.getOrganizador() != null && 
+                                  partida.getOrganizador().getId().equals(organizadorId))
                 .collect(Collectors.toList());
     }
 
@@ -140,6 +124,10 @@ public class PartidaService implements IPartidaService {
         
         IJogador jogador = jogadorService.findById(jogadorId)
                 .orElseThrow(() -> new RuntimeException("Jogador não encontrado"));
+        
+        if (partida.getJogadores().size() >= partida.getNumeroJogadores()) {
+            throw new IllegalStateException("Partida lotada");
+        }
         
         partida.adicionarJogador(jogador);
     }

@@ -1,4 +1,3 @@
-// Interface base para usuário
 package br.edu.iff.com.agenda_futebol_amador.contracts.entities;
 
 public interface IUsuario {

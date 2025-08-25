@@ -24,11 +24,13 @@ public class AdministradorService implements IAdministradorService {
     }
 
     private void initializeAdminData() {
+    // Verificar se o admin já existe antes de criar
+    if (usuarioService.findByEmail("admin@email.com").isEmpty()) {
         IUsuario adminUsuario = usuarioService.registerUsuario("Admin", "admin@email.com", "admin123", "ADMINISTRADOR");
         IAdministrador admin = createFromUsuario(adminUsuario.getId());
         administradores.add(admin);
     }
-
+}
     @Override
     public List<IAdministrador> findAll() {
         return new ArrayList<>(administradores);
@@ -65,17 +67,26 @@ public class AdministradorService implements IAdministradorService {
     }
 
     @Override
-    public IAdministrador createFromUsuario(Long usuarioId) {
-        IUsuario usuario = usuarioService.findById(usuarioId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-        
-        if (!"ADMINISTRADOR".equals(usuario.getTipo())) {
-            throw new RuntimeException("Usuário não é do tipo ADMINISTRADOR");
-        }
-        
-        IAdministrador administrador = new AdministradorEntity(usuario);
-        return save(administrador);
+public IAdministrador createFromUsuario(Long usuarioId) {
+    IUsuario usuario = usuarioService.findById(usuarioId)
+            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+    
+    if (!"ADMINISTRADOR".equals(usuario.getTipo())) {
+        throw new RuntimeException("Usuário não é do tipo ADMINISTRADOR");
     }
+    
+    // Verificar se já existe um administrador para este usuário
+    Optional<IAdministrador> existingAdmin = administradores.stream()
+            .filter(admin -> admin.getId().equals(usuarioId))
+            .findFirst();
+    
+    if (existingAdmin.isPresent()) {
+        return existingAdmin.get();
+    }
+    
+    IAdministrador administrador = new AdministradorEntity(usuario);
+    return save(administrador);
+}
 
     @Override
     public long countTotalUsuarios() {

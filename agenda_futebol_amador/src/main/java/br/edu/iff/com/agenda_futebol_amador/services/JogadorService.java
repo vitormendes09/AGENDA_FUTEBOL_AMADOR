@@ -1,6 +1,7 @@
 package br.edu.iff.com.agenda_futebol_amador.services;
 
 import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.Lazy;
 import br.edu.iff.com.agenda_futebol_amador.contracts.entities.IJogador;
 import br.edu.iff.com.agenda_futebol_amador.contracts.entities.IPartida;
 import br.edu.iff.com.agenda_futebol_amador.contracts.entities.IUsuario;
@@ -19,23 +20,26 @@ public class JogadorService implements IJogadorService {
     private final IUsuarioService usuarioService;
     private final IPartidaService partidaService;
 
-    public JogadorService(IUsuarioService usuarioService, IPartidaService partidaService) {
+    // Use @Lazy para quebrar a dependência circular
+    public JogadorService(IUsuarioService usuarioService, @Lazy IPartidaService partidaService) {
         this.usuarioService = usuarioService;
         this.partidaService = partidaService;
-        
-        // Inicializar com alguns jogadores de exemplo
         initializeSampleData();
     }
 
     private void initializeSampleData() {
-        IUsuario usuario1 = usuarioService.registerUsuario("João Silva", "joao@email.com", "senha123", "JOGADOR");
-        IUsuario usuario2 = usuarioService.registerUsuario("Maria Santos", "maria@email.com", "senha123", "JOGADOR");
-        
-        IJogador jogador1 = createFromUsuario(usuario1.getId());
-        IJogador jogador2 = createFromUsuario(usuario2.getId());
-        
-        jogadores.add(jogador1);
-        jogadores.add(jogador2);
+        // Verificar se os usuários já existem antes de criar
+        if (usuarioService.findByEmail("joao@email.com").isEmpty()) {
+            IUsuario usuario1 = usuarioService.registerUsuario("João Silva", "joao@email.com", "senha123", "JOGADOR");
+            IJogador jogador1 = createFromUsuario(usuario1.getId());
+            jogadores.add(jogador1);
+        }
+
+        if (usuarioService.findByEmail("maria@email.com").isEmpty()) {
+            IUsuario usuario2 = usuarioService.registerUsuario("Maria Santos", "maria@email.com", "senha123", "JOGADOR");
+            IJogador jogador2 = createFromUsuario(usuario2.getId());
+            jogadores.add(jogador2);
+        }
     }
 
     @Override
@@ -75,11 +79,9 @@ public class JogadorService implements IJogadorService {
         IJogador jogador = findById(jogadorId)
                 .orElseThrow(() -> new RuntimeException("Jogador não encontrado"));
         
-        IPartida partida = partidaService.findById(partidaId)
-                .orElseThrow(() -> new RuntimeException("Partida não encontrada"));
-        
         partidaService.adicionarJogador(partidaId, jogadorId);
-        jogador.adicionarPartida(partida);
+        jogador.adicionarPartida(partidaService.findById(partidaId)
+                .orElseThrow(() -> new RuntimeException("Partida não encontrada")));
     }
 
     @Override
@@ -101,6 +103,15 @@ public class JogadorService implements IJogadorService {
         
         if (!"JOGADOR".equals(usuario.getTipo())) {
             throw new RuntimeException("Usuário não é do tipo JOGADOR");
+        }
+        
+        // Verificar se já existe um jogador para este usuário
+        Optional<IJogador> existingJogador = jogadores.stream()
+                .filter(jogador -> jogador.getId().equals(usuarioId))
+                .findFirst();
+        
+        if (existingJogador.isPresent()) {
+            return existingJogador.get();
         }
         
         IJogador jogador = new JogadorEntity(usuario);

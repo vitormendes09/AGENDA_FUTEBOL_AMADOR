@@ -1,15 +1,15 @@
 package br.edu.iff.com.agenda_futebol_amador.entities;
+
 import br.edu.iff.com.agenda_futebol_amador.contracts.entities.IUsuario;
 
 public class UsuarioEntity implements IUsuario {
 
-   private Long id;
+    private Long id;
     private String nome;
     private String email;
     private String senha;
-    private String tipo; // "JOGADOR" ou "ADMINISTRADOR"
+    private String tipo;
 
-    // Construtor
     public UsuarioEntity(Long id, String nome, String email, String senha, String tipo) {
         this.id = id;
         this.nome = nome;
@@ -18,9 +18,14 @@ public class UsuarioEntity implements IUsuario {
         this.tipo = tipo;
     }
 
-    // Getters e Setters (implementação da interface Usuario)
     @Override
     public Long getId() { return id; }
+    
+    // CORREÇÃO: Implementar corretamente o setId
+    public void setId(Long id) { 
+        this.id = id; 
+    }
+    
     @Override
     public String getNome() { return nome; }
     @Override
@@ -36,10 +41,4 @@ public class UsuarioEntity implements IUsuario {
     public void setEmail(String email) { this.email = email; }
     @Override
     public void setSenha(String senha) { this.senha = senha; }
-
-    public void setId(Long newId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setId'");
-    }
-    
 }

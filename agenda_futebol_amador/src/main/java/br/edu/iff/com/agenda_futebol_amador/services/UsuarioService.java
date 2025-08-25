@@ -43,7 +43,6 @@ public class UsuarioService implements IUsuarioService {
     @Override
     public IUsuario save(IUsuario usuario) {
         if (usuario.getId() == null) {
-            // Novo usuário
             Long newId = idCounter.getAndIncrement();
             if (usuario instanceof UsuarioEntity) {
                 ((UsuarioEntity) usuario).setId(newId);
@@ -51,15 +50,28 @@ public class UsuarioService implements IUsuarioService {
             usuarios.add(usuario);
             return usuario;
         } else {
+            
             // Atualizar usuário existente
-            return findById(usuario.getId())
-                    .map(existing -> {
-                        existing.setNome(usuario.getNome());
-                        existing.setEmail(usuario.getEmail());
-                        existing.setSenha(usuario.getSenha());
-                        return existing;
-                    })
-                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+            Optional<IUsuario> existingUserOpt = findById(usuario.getId());
+            if (existingUserOpt.isPresent()) {
+                IUsuario existing = existingUserOpt.get();
+                existing.setNome(usuario.getNome());
+                existing.setEmail(usuario.getEmail());
+                existing.setSenha(usuario.getSenha());
+                return existing;
+
+            } else {
+                // Se não encontrou, trata como novo usuário (ou lança exceção)
+                Long newId = idCounter.getAndIncrement();
+                if (usuario instanceof UsuarioEntity) {
+                    ((UsuarioEntity) usuario).setId(newId);
+                } else {
+                     // Se não for UsuarioEntity, precisa de outra abordagem
+            throw new IllegalArgumentException("Tipo de usuário não suportado");
+                }
+                usuarios.add(usuario);
+                return usuario;
+            }
         }
     }
 
