@@ -36,5 +36,10 @@ public class UsuarioEntity implements IUsuario {
     public void setEmail(String email) { this.email = email; }
     @Override
     public void setSenha(String senha) { this.senha = senha; }
+
+    public void setId(Long newId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setId'");
+    }
     
 }

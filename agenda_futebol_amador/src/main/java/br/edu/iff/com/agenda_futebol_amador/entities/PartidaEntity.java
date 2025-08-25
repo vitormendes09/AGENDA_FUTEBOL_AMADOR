@@ -81,4 +81,9 @@ public class PartidaEntity implements IPartida {
     public void removerJogador(IJogador jogador) {
         jogadores.remove(jogador);
     }
+
+    public void setId(long andIncrement) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setId'");
+    }
 }
