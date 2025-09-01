@@ -12,7 +12,7 @@ public class HomeController implements IHomeController {
 
     @Override
     public String home(Model model) { 
-        model.addAttribute("partidas");
+        model.addAttribute("partidas", "Pelada Amadora - Home");
         return "index";
     }
     

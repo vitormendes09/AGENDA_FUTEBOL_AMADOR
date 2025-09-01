@@ -1,18 +1,13 @@
 package br.edu.iff.com.agenda_futebol_amador.entities;
 
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.PrimaryKeyJoinColumn;
-import jakarta.persistence.Table;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.edu.iff.com.agenda_futebol_amador.contracts.entities.IUsuario;
+
 @Entity
-@Table(name = "jogadores")
-@PrimaryKeyJoinColumn(name = "usuario_id")
+@DiscriminatorValue("JOGADOR")
 public class JogadorEntity extends UsuarioEntity {
 
     @ManyToMany
@@ -26,11 +21,16 @@ public class JogadorEntity extends UsuarioEntity {
     // Construtores
     public JogadorEntity() {
         super();
-        this.setTipo("JOGADOR");
     }
 
     public JogadorEntity(String nome, String email, String senha) {
-        super(nome, email, senha, "JOGADOR");
+        super(nome, email, senha);
+    }
+
+    // Construtor que recebe IUsuario
+    public JogadorEntity(IUsuario usuario) {
+        super(usuario.getNome(), usuario.getEmail(), usuario.getSenha());
+        this.setId(usuario.getId());
     }
 
     // Métodos específicos

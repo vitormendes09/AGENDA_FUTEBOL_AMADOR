@@ -17,30 +17,16 @@ import java.util.Optional;
 public class JogadorService implements IJogadorService {
 
     private final List<IJogador> jogadores = new ArrayList<>();
-    private final IUsuarioService usuarioService;
+  
     private final IPartidaService partidaService;
 
-    // Use @Lazy para quebrar a dependência circular
     public JogadorService(IUsuarioService usuarioService, @Lazy IPartidaService partidaService) {
-        this.usuarioService = usuarioService;
+      
         this.partidaService = partidaService;
-        initializeSampleData();
+      
     }
 
-    private void initializeSampleData() {
-        // Verificar se os usuários já existem antes de criar
-        if (usuarioService.findByEmail("joao@email.com").isEmpty()) {
-            IUsuario usuario1 = usuarioService.registerUsuario("João Silva", "joao@email.com", "senha123", "JOGADOR");
-            IJogador jogador1 = createFromUsuario(usuario1.getId());
-            jogadores.add(jogador1);
-        }
-
-        if (usuarioService.findByEmail("maria@email.com").isEmpty()) {
-            IUsuario usuario2 = usuarioService.registerUsuario("Maria Santos", "maria@email.com", "senha123", "JOGADOR");
-            IJogador jogador2 = createFromUsuario(usuario2.getId());
-            jogadores.add(jogador2);
-        }
-    }
+    
 
     @Override
     public List<IJogador> findAll() {
@@ -98,22 +84,9 @@ public class JogadorService implements IJogadorService {
 
     @Override
     public IJogador createFromUsuario(Long usuarioId) {
-        IUsuario usuario = usuarioService.findById(usuarioId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-        
-        if (!"JOGADOR".equals(usuario.getTipo())) {
-            throw new RuntimeException("Usuário não é do tipo JOGADOR");
-        }
-        
-        Optional<IJogador> existingJogador = jogadores.stream()
-                .filter(jogador -> jogador.getId().equals(usuarioId))
-                .findFirst();
-        
-        if (existingJogador.isPresent()) {
-            return existingJogador.get();
-        }
-        
-        IJogador jogador = new JogadorEntity(usuario);
-        return save(jogador);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'createFromUsuario'");
     }
+
+  
 }

@@ -44,13 +44,20 @@ public class UsuarioService implements IUsuarioService {
     public IUsuario save(IUsuario usuario) {
         if (usuario.getId() == null) {
             Long newId = idCounter.getAndIncrement();
+            // Definir o ID independentemente do tipo de implementação
             if (usuario instanceof UsuarioEntity) {
                 ((UsuarioEntity) usuario).setId(newId);
+            } else {
+                // Para outras implementações, usar reflexão ou outro método
+                try {
+                    usuario.getClass().getMethod("setId", Long.class).invoke(usuario, newId);
+                } catch (Exception e) {
+                    throw new RuntimeException("Não foi possível definir o ID para o usuário", e);
+                }
             }
             usuarios.add(usuario);
             return usuario;
         } else {
-            
             // Atualizar usuário existente
             Optional<IUsuario> existingUserOpt = findById(usuario.getId());
             if (existingUserOpt.isPresent()) {
@@ -59,18 +66,8 @@ public class UsuarioService implements IUsuarioService {
                 existing.setEmail(usuario.getEmail());
                 existing.setSenha(usuario.getSenha());
                 return existing;
-
             } else {
-                // Se não encontrou, trata como novo usuário (ou lança exceção)
-                Long newId = idCounter.getAndIncrement();
-                if (usuario instanceof UsuarioEntity) {
-                    ((UsuarioEntity) usuario).setId(newId);
-                } else {
-                     // Se não for UsuarioEntity, precisa de outra abordagem
-            throw new IllegalArgumentException("Tipo de usuário não suportado");
-                }
-                usuarios.add(usuario);
-                return usuario;
+                throw new RuntimeException("Usuário não encontrado para atualização");
             }
         }
     }
@@ -80,27 +77,17 @@ public class UsuarioService implements IUsuarioService {
         usuarios.removeIf(usuario -> usuario.getId().equals(id));
     }
 
-    @Override
-    public IUsuario registerUsuario(String nome, String email, String senha, String tipo) {
-        if (existsByEmail(email)) {
-            throw new RuntimeException("Email já cadastrado");
-        }
-
-        IUsuario novoUsuario = new UsuarioEntity(
-            idCounter.getAndIncrement(),
-            nome,
-            email,
-            senha, // Em produção, isso deve ser criptografado
-            tipo
-        );
-
-        return save(novoUsuario);
-    }
-
+    
     @Override
     public IUsuario authenticate(String email, String senha) {
         return findByEmail(email)
-                .filter(usuario -> usuario.getSenha().equals(senha)) // Em produção, usar BCrypt
+                .filter(usuario -> usuario.getSenha().equals(senha))
                 .orElseThrow(() -> new RuntimeException("Credenciais inválidas"));
+    }
+
+    @Override
+    public UsuarioEntity registerUsuario(String nome, String email, String senha, String tipo) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'registerUsuario'");
     }
 }

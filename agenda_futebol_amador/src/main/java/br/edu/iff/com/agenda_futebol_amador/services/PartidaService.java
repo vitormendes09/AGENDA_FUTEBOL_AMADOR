@@ -23,30 +23,9 @@ public class PartidaService implements IPartidaService {
     // Use @Lazy para quebrar a dependência circular
     public PartidaService(@Lazy IJogadorService jogadorService) {
         this.jogadorService = jogadorService;
-        initializeSampleData();
     }
 
-    private void initializeSampleData() {
-        // Buscar um jogador existente para ser organizador
-        Optional<IJogador> organizadorOpt = jogadorService.findAll().stream().findFirst();
-        
-        if (organizadorOpt.isPresent()) {
-            IPartida partida1 = new PartidaEntity(
-                idCounter.getAndIncrement(),
-                "Pelada do Bairro",
-                "15/08/2024",
-                "19:00",
-                "São Fidélis",
-                15.0,
-                10,
-                "PUBLICA",
-                organizadorOpt.get()
-            );
-            
-            partidas.add(partida1);
-        }
-    }
-
+    
     @Override
     public List<IPartida> findAll() {
         return new ArrayList<>(partidas);

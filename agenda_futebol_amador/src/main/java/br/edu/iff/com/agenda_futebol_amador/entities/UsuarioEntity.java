@@ -1,18 +1,12 @@
 package br.edu.iff.com.agenda_futebol_amador.entities;
 
-
+import jakarta.persistence.*;
 import java.util.Objects;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-
-import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "usuarios")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "tipo", discriminatorType = DiscriminatorType.STRING)
 public class UsuarioEntity {
 
     @Id
@@ -28,17 +22,15 @@ public class UsuarioEntity {
     @Column(nullable = false, length = 255)
     private String senha;
     
-    @Column(nullable = false, length = 20)
-    private String tipo; // "ADMINISTRADOR" ou "JOGADOR"
+    // Remova o campo 'tipo' pois será gerenciado pela estratégia de herança
 
     // Construtores
     public UsuarioEntity() {}
 
-    public UsuarioEntity(String nome, String email, String senha, String tipo) {
+    public UsuarioEntity(String nome, String email, String senha) {
         this.nome = nome;
         this.email = email;
         this.senha = senha;
-        this.tipo = tipo;
     }
 
     // Getters e Setters
@@ -54,8 +46,12 @@ public class UsuarioEntity {
     public String getSenha() { return senha; }
     public void setSenha(String senha) { this.senha = senha; }
     
-    public String getTipo() { return tipo; }
-    public void setTipo(String tipo) { this.tipo = tipo; }
+    public String getTipo() {
+        // Retorna o tipo baseado na classe
+        if (this instanceof AdministradorEntity) return "ADMINISTRADOR";
+        if (this instanceof JogadorEntity) return "JOGADOR";
+        return "USUARIO";
+    }
 
     @Override
     public boolean equals(Object o) {
