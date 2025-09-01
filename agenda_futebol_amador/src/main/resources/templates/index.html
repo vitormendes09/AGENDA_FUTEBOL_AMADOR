@@ -51,54 +51,7 @@
         </div>
     </section>
 
-    <!-- Partidas em Destaque -->
-    <section class="container mb-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="mb-0">Partidas Disponíveis</h2>
-            <a href="/partidas/nova" class="btn btn-primary btn-custom">
-                <i class="fas fa-plus me-1"></i> Criar Partida
-            </a>
-        </div>
-        
-        <div class="row" th:if="${partidas != null and !partidas.empty}">
-            <div class="col-md-4 mb-4" th:each="partida : ${partidas}">
-                <div class="card partida-card h-100">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0" th:text="${partida.nome}">Nome da Partida</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="partida-info">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span th:text="${partida.data} + ' às ' + ${partida.hora}">00/00/0000 às 00:00</span>
-                        </div>
-                        <div class="partida-info">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span th:text="${partida.cidade}">Cidade</span>
-                        </div>
-                        <div class="partida-info">
-                            <i class="fas fa-users"></i>
-                            <span th:text="${partida.numeroJogadores} + ' jogadores'">0 jogadores</span>
-                        </div>
-                        <div class="partida-info">
-                            <i class="fas fa-tag"></i>
-                            <span th:text="'R$ ' + ${#numbers.formatDecimal(partida.valor, 1, 2)}">R$ 0,00</span>
-                        </div>
-                        <a href="#" class="btn btn-outline-primary w-100 mt-3">
-                            <i class="fas fa-info-circle me-1"></i> Detalhes
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="text-center py-5" th:if="${partidas == null or partidas.empty}">
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle me-2"></i>
-                Nenhuma partida disponível no momento. Que tal criar uma?
-            </div>
-        </div>
-    </section>
-
+    
     <!-- Como Funciona -->
     <section class="bg-primary text-white py-5">
         <div class="container">
