@@ -105,7 +105,6 @@ public class JogadorService implements IJogadorService {
             throw new RuntimeException("Usuário não é do tipo JOGADOR");
         }
         
-        // Verificar se já existe um jogador para este usuário
         Optional<IJogador> existingJogador = jogadores.stream()
                 .filter(jogador -> jogador.getId().equals(usuarioId))
                 .findFirst();
