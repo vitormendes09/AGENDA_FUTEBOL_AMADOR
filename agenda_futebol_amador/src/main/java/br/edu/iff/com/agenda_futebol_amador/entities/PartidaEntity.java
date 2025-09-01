@@ -1,26 +1,62 @@
 package br.edu.iff.com.agenda_futebol_amador.entities;
-import br.edu.iff.com.agenda_futebol_amador.contracts.entities.IPartida;
-import java.util.List;
+
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
-import br.edu.iff.com.agenda_futebol_amador.contracts.entities.IJogador;
+import java.util.List;
 
-public class PartidaEntity implements IPartida {
-   
-     private Long id;
+@Entity
+@Table(name = "partidas")
+public class PartidaEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(nullable = false, length = 100)
     private String nome;
-    private String data;
-    private String hora;
+    
+    @Column(nullable = false)
+    private LocalDate data;
+    
+    @Column(nullable = false)
+    private LocalTime hora;
+    
+    @Column(nullable = false, length = 100)
     private String cidade;
+    
+    @Column(nullable = false)
     private double valor;
+    
+    @Column(nullable = false)
     private int numeroJogadores;
+    
+    @Column(nullable = false, length = 20)
     private String status; // "PRIVADA" ou "PUBLICA"
-    private IJogador organizador;
-    private List<IJogador> jogadores;
+    
+    @ManyToOne
+    @JoinColumn(name = "organizador_id", nullable = false)
+    private JogadorEntity organizador;
+    
+    @ManyToMany(mappedBy = "partidasInscritas")
+    private List<JogadorEntity> jogadores = new ArrayList<>();
 
+    // Construtores
+    public PartidaEntity() {}
 
-    public PartidaEntity(Long id, String nome, String data, String hora, String cidade, 
-                        double valor, int numeroJogadores, String status, IJogador organizador) {
-        this.id = id;
+    public PartidaEntity(String nome, LocalDate data, LocalTime hora, String cidade, 
+                        double valor, int numeroJogadores, String status, JogadorEntity organizador) {
         this.nome = nome;
         this.data = data;
         this.hora = hora;
@@ -29,60 +65,50 @@ public class PartidaEntity implements IPartida {
         this.numeroJogadores = numeroJogadores;
         this.status = status;
         this.organizador = organizador;
-        this.jogadores = new ArrayList<>();
     }
 
-     // Implementação dos métodos da interface Partida
-    @Override
+    // Getters e Setters
     public Long getId() { return id; }
-    @Override
-    public String getNome() { return nome; }
-    @Override
-    public String getData() { return data; }
-    @Override
-    public String getHora() { return hora; }
-    @Override
-    public String getCidade() { return cidade; }
-    @Override
-    public double getValor() { return valor; }
-    @Override
-    public int getNumeroJogadores() { return numeroJogadores; }
-    @Override
-    public String getStatus() { return status; }
-    @Override
-    public IJogador getOrganizador() { return organizador; }
-    @Override
-    public List<IJogador> getJogadores() { return jogadores; }
+    public void setId(Long id) { this.id = id; }
     
-    @Override
+    public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
-    @Override
-    public void setData(String data) { this.data = data; }
-    @Override
-    public void setHora(String hora) { this.hora = hora; }
-    @Override
+    
+    public LocalDate getData() { return data; }
+    public void setData(LocalDate data) { this.data = data; }
+    
+    public LocalTime getHora() { return hora; }
+    public void setHora(LocalTime hora) { this.hora = hora; }
+    
+    public String getCidade() { return cidade; }
     public void setCidade(String cidade) { this.cidade = cidade; }
-    @Override
+    
+    public double getValor() { return valor; }
     public void setValor(double valor) { this.valor = valor; }
-    @Override
+    
+    public int getNumeroJogadores() { return numeroJogadores; }
     public void setNumeroJogadores(int numeroJogadores) { this.numeroJogadores = numeroJogadores; }
-    @Override
+    
+    public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
     
-    @Override
-    public void adicionarJogador(IJogador jogador) {
+    public JogadorEntity getOrganizador() { return organizador; }
+    public void setOrganizador(JogadorEntity organizador) { this.organizador = organizador; }
+    
+    public List<JogadorEntity> getJogadores() { return jogadores; }
+    public void setJogadores(List<JogadorEntity> jogadores) { this.jogadores = jogadores; }
+
+    // Métodos de negócio
+    public void adicionarJogador(JogadorEntity jogador) {
         if(jogadores.size() >= numeroJogadores) {
             throw new IllegalStateException("Número máximo de jogadores atingido");
         }
         jogadores.add(jogador);
+        jogador.getPartidasInscritas().add(this);
     }
     
-    @Override
-    public void removerJogador(IJogador jogador) {
+    public void removerJogador(JogadorEntity jogador) {
         jogadores.remove(jogador);
+        jogador.getPartidasInscritas().remove(this);
     }
-
-    public void setId(Long id) {
-    this.id = id;
-}
 }
