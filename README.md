@@ -1,128 +1,164 @@
-#  Agenda de Futebol Amador
+# Agenda de Futebol Amador 
 
-Projeto acadêmico desenvolvido por **Isabella Figueiredo** e **Vitor Mendes** com o objetivo de criar uma aplicação back-end para gerenciar partidas de futebol amador, permitindo que usuários se organizem para jogar "peladas" de forma prática e eficiente.
-
----
-
-##  Visão Geral
-
-A Agenda de Futebol Amador permite que jogadores e organizadores possam:
-
-- Criar partidas de futebol amador (privadas ou públicas).
-- Se inscrever para participar de jogos.
-- Gerenciar jogadores inscritos.
-- Administradores podem supervisionar e moderar o uso da plataforma.
+Projeto acadêmico desenvolvido por **Isabella Figueiredo** e **Vitor Mendes** com o objetivo de criar uma aplicação web para gerenciar partidas de futebol amador, permitindo que usuários se organizem para jogar "peladas" de forma prática e eficiente.
 
 ---
 
-##  Tecnologias Utilizadas
+## Visão Geral
 
-- **Java 17+**
-- **Spring Boot**
+A Agenda de Futebol Amador é uma plataforma que permite:
+
+- **Criar e gerenciar partidas** de futebol amador (privadas ou públicas)
+- **Inscrever-se** para participar de jogos
+- **Visualizar partidas disponíveis** por cidade
+- **Gerenciar perfil de usuário** e histórico de partidas
+- **Administradores** podem supervisionar e moderar a plataforma
+
+---
+
+## Tecnologias Utilizadas
+
+- **Java 17**
+- **Spring Boot 3.5.4**
+- **Spring MVC**
+- **Thymeleaf** (Template Engine)
+- **Spring Data JPA**
+- **H2 Database** (banco em memória)
 - **Maven**
-- **MongoDB Atlas** *(preferencial, sujeito a diretrizes da disciplina)*
-- **JWT para autenticação** *(se permitido)*
-- **React.js** *(caso haja front-end permitido)*
+- **HTML5/CSS3/JavaScript**
+- **Lombok** (para redução de boilerplate code)
+- **Spring Validation**
 
 ---
 
+## Como Executar
 
+### Pré-requisitos
+- Java JDK 17 ou superior
+- Maven 3.6+ 
+- Navegador web moderno
 
-##  Entidades Principais
+### Passo a passo
 
-###  Usuario (Abstrato)
+1. **Clone o repositório**
+   ```bash
+   git clone https://github.com/vitormendes09/AGENDA_FUTEBOL_AMADOR.git
+   cd agenda_futebol_amador
+   ```
 
-Atributos:
-- `id`
-- `nome`
-- `email`
-- `senha`
-- `tipo`: `JOGADOR`, `ORGANIZADOR`, `ADMINISTRADOR`
+2. **Compile o projeto**
+   ```bash
+   mvn clean compile
+   ```
+
+3. **Execute a aplicação**
+   ```bash
+   mvn spring-boot:run
+   ```
+
+4. **Acesse a aplicação**
+   Abra seu navegador e vá para: `http://localhost:8080`
 
 ---
+
+## Estrutura do Projeto
+
+```
+agenda_futebol_amador/
+├── src/main/java/br/edu/iff/com/agenda_futebol_amador/
+│   ├── contracts/              # Interfaces e contratos
+│   │   ├── controllers/view/   # Interfaces dos controllers
+│   │   ├── entities/           # Interfaces das entidades
+│   │   └── services/           # Interfaces dos serviços
+│   ├── controllers/            # Implementações dos controllers
+│   │   ├── view/              # Controllers Thymeleaf
+│   │   └── restapi/           # Controllers API REST
+│   ├── entities/              # Implementações das entidades
+│   ├── services/              # Implementações dos serviços
+│   └── AgendaFutebolAmadorApplication.java
+├── src/main/resources/
+│   ├── static/                # Arquivos estáticos (CSS, JS, imagens)
+│   ├── templates/             # Templates Thymeleaf
+│   └── application.properties # Configurações da aplicação
+└── pom.xml
+```
+
+---
+
+## Funcionalidades Implementadas
+
+### Sistema de Usuários
+- **Dois tipos de usuários**: Jogador e Administrador
+
+
+### Gestão de Partidas
+- **Criação de partidas** com data, hora, local e valor
+- **Partidas públicas e privadas**
+- **Sistema de inscrição** para jogadores
+- **Controle de vagas** disponíveis
+
+###  Painel Administrativo
+- **Visualização de estatísticas**
+- **Gestão de usuários**
+- **Monitoramento de partidas**
+
+###  Interface Web
+- **Página inicial** com partidas em destaque
+- **Navegação intuitiva** entre seções
+
+---
+
+## Fluxo da Aplicação
+
+1. **Acesso inicial**: Página home com partidas disponíveis
+2. **Registro/Login**: Usuário se autentica no sistema
+3. **Navegação**: 
+   - Jogadores: visualizam e se inscrevem em partidas
+   - Administradores: acessam painel de controle
+4. **Interação**: Inscrição em partidas, gestão de perfil, etc.
+
+---
+
+## Entidades Principais
+
+### Usuario
+- Atributos: id, nome, email, senha, tipo (JOGADOR, ORGANIZADOR, ADMINISTRADOR)
+- Funcionalidades: autenticação, gestão de perfil
 
 ### Jogador
-
-- Pode se inscrever em partidas públicas.
-- Pode visualizar o histórico de jogos.
-- Pode ver outros jogadores de uma partida pública.
-- Pode se retirar de uma partida.
-
----
-
-### Organizador
-
-- Pode criar, atualizar ou excluir uma partida que criou.
-- Pode tornar uma partida pública ou privada.
-- Pode adicionar e remover jogadores da sua partida.
-- Pode ver jogadores inscritos em qualquer partida (mesmo as privadas).
-
----
-
-### Administrador
-
-- Pode listar todos os usuários.
-- Pode deletar qualquer usuário.
-
----
+- Herda de Usuario
+- Funcionalidades: inscrever-se em partidas, visualizar histórico
 
 ### Partida
-
-Atributos:
-- `id`
-- `nome`
-- `data`
-- `hora`
-- `valor`
-- `status`: `PRIVADA`, `PUBLICA`
-- `numeroJogadores`
-- `organizadorId`
-
-Funcionalidades:
-- CRUD completo apenas pelo Organizador criador da partida.
-- Jogadores podem se inscrever se a partida for pública.
-- Jogadores podem visualizar lista de participantes, se for pública.
+- Atributos: id, nome, data, hora, cidade, valor, número de jogadores, status
+- Funcionalidades: CRUD, gestão de inscrições, controle de vagas
 
 ---
 
-## Autenticação
+## Interface e Experiência do Usuário
 
-- O sistema utilizará **JWT (JSON Web Token)** para autenticação segura.
-- Apenas usuários autenticados poderão acessar as rotas protegidas.
-- O token será gerado no login e utilizado em todas as requisições subsequentes.
-
----
-
-## Regras de Negócio (Resumo)
-
-1. Um organizador pode gerenciar apenas suas próprias partidas.
-2. Apenas partidas públicas podem ser vistas e acessadas por outros jogadores.
-3. Um jogador não pode se inscrever duas vezes na mesma partida.
-4. Um jogador pode sair de uma partida que ele mesmo se inscreveu.
-5. O número máximo de jogadores por partida deve ser respeitado.
-6. Apenas administradores podem excluir usuários.
-7. Apenas usuários autenticados têm acesso ao sistema.
+A aplicação utiliza **Thymeleaf** para renderização server-side com:
+- Templates organizados por funcionalidade
+- Layout responsivo e intuitivo
+- Formulários validados no front-end e back-end
+- Mensagens de feedback para o usuário
 
 ---
 
-## Funcionalidades
+## Configurações Técnicas
 
-| Funcionalidade                     | Jogador | Organizador | Administrador |
-|-----------------------------------|---------|-------------|----------------|
-| Criar Partida                     | x      | v          | x             |
-| Atualizar / Deletar Partida      | x      | v (própria) | x             |
-| Inscrever-se em Partida Pública  | v      | v          | x             |
-| Visualizar Participantes Públicos| v      | v          | x             |
-| Adicionar / Remover Jogadores    | x      | v          | x             |
-| Listar Usuários                  | x      | x          | v             |
-| Deletar Usuário                  | x      | x          | v             |
+### Banco de Dados
+- **H2 Database** em modo embutido
+- Dados persistem durante a execução da aplicação
+- Acesso ao console H2: `http://localhost:8080/h2-console`
+  - JDBC URL: `jdbc:h2:mem:testdb`
+  - Usuário: `sa`
+  - Senha: (vazia)
+
 
 ---
 
-## 📊 Diagrama UML
+## Equipe de Desenvolvimento
 
-Abaixo está o diagrama de entidades e relacionamentos do projeto:
-
-![UML Agenda Futebol Amador](./UML_AgendaFutebolAmador.png)
-
+- **Isabella Figueiredo** & **Vitor Mendes** 
 
