@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">Partidas Disponíveis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Partidas Disponíveis</h2>
+            <a th:href="@{/partidas/criar}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Criar Partida
+            </a>
+        </div>
+        
+        <!-- Formulário de busca -->
+        <form th:action="@{/partidas}" method="get" class="mb-4">
+            <div class="input-group">
+                <input type="text" class="form-control" name="cidade" 
+                       placeholder="Buscar por cidade..." th:value="${cidade}">
+                <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+            </div>
+        </form>
+        
+        <!-- Lista de partidas -->
+        <div class="row" th:if="${partidas != null and !partidas.isEmpty()}">
+            <div class="col-md-6 mb-3" th:each="partida : ${partidas}">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${partida.nome}">Nome da Partida</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">
+                            <span th:text="${partida.cidade}">Cidade</span> - 
+                            <span th:text="${partida.data}">Data</span> às 
+                            <span th:text="${partida.hora}">Hora</span>
+                        </h6>
+                        <p class="card-text">
+                            Valor: R$ <span th:text="${#numbers.formatDecimal(partida.valor, 1, 2)}">0,00</span><br>
+                            Vagas: <span th:text="${partida.jogadores.size()}">0</span>/
+                            <span th:text="${partida.numeroJogadores}">0</span> jogadores<br>
+                            Status: <span th:text="${partida.status}">Status</span>
+                        </p>
+                        <a th:href="@{/partidas/{id}(id=${partida.id})}" 
+                           class="btn btn-primary btn-sm">Ver Detalhes</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mensagem quando não há partidas -->
+        <div th:if="${partidas == null or partidas.isEmpty()}" class="text-center">
+            <p>Nenhuma partida encontrada.</p>
+            <a th:href="@{/partidas/criar}" class="btn btn-primary">Crie a primeira partida!</a>
+        </div>
+    </div>
+</body>
+</html>

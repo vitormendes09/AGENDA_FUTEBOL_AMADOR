@@ -1,6 +1,5 @@
 package br.edu.iff.com.agenda_futebol_amador.entities;
 
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,6 +9,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -24,27 +28,37 @@ public class PartidaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @NotBlank(message = "O nome da partida é obrigatório")
+    @Size(min = 3, max = 100, message = "O nome deve ter entre 3 e 100 caracteres")
     @Column(nullable = false, length = 100)
     private String nome;
     
+    @NotNull(message = "A data é obrigatória")
     @Column(nullable = false)
     private LocalDate data;
     
+    @NotNull(message = "A hora é obrigatória")
     @Column(nullable = false)
     private LocalTime hora;
     
+    @NotBlank(message = "A cidade é obrigatória")
+    @Size(min = 2, max = 100, message = "A cidade deve ter entre 2 e 100 caracteres")
     @Column(nullable = false, length = 100)
     private String cidade;
     
+    @PositiveOrZero(message = "O valor deve ser positivo ou zero")
     @Column(nullable = false)
     private double valor;
     
+    @Positive(message = "O número de jogadores deve ser maior que zero")
     @Column(nullable = false)
     private int numeroJogadores;
     
+    @NotBlank(message = "O status é obrigatório")
     @Column(nullable = false, length = 20)
     private String status; // "PRIVADA" ou "PUBLICA"
     
+    @NotNull(message = "O organizador é obrigatório")
     @ManyToOne
     @JoinColumn(name = "organizador_id", nullable = false)
     private JogadorEntity organizador;

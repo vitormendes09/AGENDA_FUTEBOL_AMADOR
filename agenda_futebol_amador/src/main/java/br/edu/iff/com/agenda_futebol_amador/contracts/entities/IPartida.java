@@ -1,4 +1,4 @@
-package br.edu.iff.com.agenda_futebol_amador.contracts.entities;
+ package br.edu.iff.com.agenda_futebol_amador.contracts.entities;
 
 import java.util.List;
 
@@ -21,5 +21,5 @@ public interface IPartida {
     void setNumeroJogadores(int numeroJogadores);
     void setStatus(String status);
     void adicionarJogador(IJogador jogador);
-    void removerJogador(IJogador jogador);
+    void removerJogador(IJogador jogador); 
 }
