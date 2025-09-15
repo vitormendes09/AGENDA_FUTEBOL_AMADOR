@@ -1,20 +1,11 @@
 package br.edu.iff.com.agenda_futebol_amador.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -63,7 +54,12 @@ public class PartidaEntity {
     @JoinColumn(name = "organizador_id", nullable = false)
     private JogadorEntity organizador;
     
-    @ManyToMany(mappedBy = "partidasInscritas")
+    @ManyToMany
+    @JoinTable(
+        name = "jogador_partida",
+        joinColumns = @JoinColumn(name = "partida_id"),
+        inverseJoinColumns = @JoinColumn(name = "jogador_id")
+    )
     private List<JogadorEntity> jogadores = new ArrayList<>();
 
     // Construtores
@@ -117,12 +113,18 @@ public class PartidaEntity {
         if(jogadores.size() >= numeroJogadores) {
             throw new IllegalStateException("Número máximo de jogadores atingido");
         }
-        jogadores.add(jogador);
-        jogador.getPartidasInscritas().add(this);
+        if(!jogadores.contains(jogador)) {
+            jogadores.add(jogador);
+            jogador.getPartidasInscritas().add(this);
+        }
     }
     
     public void removerJogador(JogadorEntity jogador) {
         jogadores.remove(jogador);
         jogador.getPartidasInscritas().remove(this);
+    }
+    
+    public int getVagasDisponiveis() {
+        return numeroJogadores - jogadores.size();
     }
 }

@@ -1,78 +1,64 @@
 package br.edu.iff.com.agenda_futebol_amador.services;
 
-import org.springframework.stereotype.Service;
-import br.edu.iff.com.agenda_futebol_amador.contracts.entities.IAdministrador;
-import br.edu.iff.com.agenda_futebol_amador.contracts.entities.IUsuario;
-import br.edu.iff.com.agenda_futebol_amador.contracts.services.IAdministradorService;
-import br.edu.iff.com.agenda_futebol_amador.contracts.services.IUsuarioService;
 import br.edu.iff.com.agenda_futebol_amador.entities.AdministradorEntity;
-import java.util.ArrayList;
+import br.edu.iff.com.agenda_futebol_amador.entities.UsuarioEntity;
+import br.edu.iff.com.agenda_futebol_amador.repository.AdministradorRepository;
+import br.edu.iff.com.agenda_futebol_amador.repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class AdministradorService implements IAdministradorService {
-
-    private final List<IAdministrador> administradores = new ArrayList<>();
-    private final IUsuarioService usuarioService;
-
-    public AdministradorService(IUsuarioService usuarioService) {
-        this.usuarioService = usuarioService;
-        
-    }
-
+public class AdministradorService {
     
-
-    @Override
-    public List<IAdministrador> findAll() {
-        return new ArrayList<>(administradores);
+    @Autowired
+    private AdministradorRepository administradorRepository;
+    
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+    
+    public List<AdministradorEntity> findAll() {
+        return administradorRepository.findAll();
     }
-
-    @Override
-    public Optional<IAdministrador> findById(Long id) {
-        return administradores.stream()
-                .filter(admin -> admin.getId().equals(id))
-                .findFirst();
+    
+    public Optional<AdministradorEntity> findById(Long id) {
+        return administradorRepository.findById(id);
     }
-
-    @Override
-    public IAdministrador save(IAdministrador administrador) {
-        if (findById(administrador.getId()).isEmpty()) {
-            administradores.add(administrador);
-        }
-        return administrador;
+    
+    public AdministradorEntity save(AdministradorEntity administrador) {
+        return administradorRepository.save(administrador);
     }
-
-    @Override
+    
     public void deleteById(Long id) {
-        administradores.removeIf(admin -> admin.getId().equals(id));
+        administradorRepository.deleteById(id);
     }
-
-    @Override
-    public List<IUsuario> listAllUsuarios() {
-        return usuarioService.findAll();
-    }
-
-    @Override
-    public void removeUsuario(Long usuarioId) {
-        usuarioService.deleteById(usuarioId);
-    }
-
     
-
-    @Override
+    public List<UsuarioEntity> listAllUsuarios() {
+        return usuarioRepository.findAll();
+    }
+    
+    public void removeUsuario(Long usuarioId) {
+        usuarioRepository.deleteById(usuarioId);
+    }
+    
+    public AdministradorEntity createFromUsuario(Long usuarioId) {
+        UsuarioEntity usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        
+        AdministradorEntity admin = new AdministradorEntity();
+        admin.setNome(usuario.getNome());
+        admin.setEmail(usuario.getEmail());
+        admin.setSenha(usuario.getSenha());
+        
+        return administradorRepository.save(admin);
+    }
+    
     public long countTotalUsuarios() {
-        return usuarioService.findAll().size();
+        return usuarioRepository.count();
     }
-
-    @Override
+    
     public long countTotalPartidas() {
-        return 0; // Implementar quando PartidaService estiver pronto
-    }
-
-    @Override
-    public IAdministrador createFromUsuario(Long usuarioId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createFromUsuario'");
+        return 0; // Implementar quando PartidaRepository estiver pronto
     }
 }

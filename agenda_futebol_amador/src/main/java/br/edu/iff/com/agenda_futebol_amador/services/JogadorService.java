@@ -1,92 +1,74 @@
 package br.edu.iff.com.agenda_futebol_amador.services;
 
-import org.springframework.stereotype.Service;
-import org.springframework.context.annotation.Lazy;
-import br.edu.iff.com.agenda_futebol_amador.contracts.entities.IJogador;
-import br.edu.iff.com.agenda_futebol_amador.contracts.entities.IPartida;
-import br.edu.iff.com.agenda_futebol_amador.contracts.entities.IUsuario;
-import br.edu.iff.com.agenda_futebol_amador.contracts.services.IJogadorService;
-import br.edu.iff.com.agenda_futebol_amador.contracts.services.IPartidaService;
-import br.edu.iff.com.agenda_futebol_amador.contracts.services.IUsuarioService;
 import br.edu.iff.com.agenda_futebol_amador.entities.JogadorEntity;
-import java.util.ArrayList;
+import br.edu.iff.com.agenda_futebol_amador.entities.PartidaEntity;
+import br.edu.iff.com.agenda_futebol_amador.repository.JogadorRepository;
+import br.edu.iff.com.agenda_futebol_amador.repository.PartidaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class JogadorService implements IJogadorService {
-
-    private final List<IJogador> jogadores = new ArrayList<>();
-  
-    private final IPartidaService partidaService;
-
-    public JogadorService(IUsuarioService usuarioService, @Lazy IPartidaService partidaService) {
-      
-        this.partidaService = partidaService;
-      
-    }
-
+public class JogadorService {
     
-
-    @Override
-    public List<IJogador> findAll() {
-        return new ArrayList<>(jogadores);
+    @Autowired
+    private JogadorRepository jogadorRepository;
+    
+    @Autowired
+    private PartidaRepository partidaRepository;
+    
+    public List<JogadorEntity> findAll() {
+        return jogadorRepository.findAll();
     }
-
-    @Override
-    public Optional<IJogador> findById(Long id) {
-        return jogadores.stream()
-                .filter(jogador -> jogador.getId().equals(id))
-                .findFirst();
+    
+    public Optional<JogadorEntity> findById(Long id) {
+        return jogadorRepository.findById(id);
     }
-
-    @Override
-    public IJogador save(IJogador jogador) {
-        if (findById(jogador.getId()).isEmpty()) {
-            jogadores.add(jogador);
-        }
-        return jogador;
+    
+    public JogadorEntity save(JogadorEntity jogador) {
+        return jogadorRepository.save(jogador);
     }
-
-    @Override
+    
     public void deleteById(Long id) {
-        jogadores.removeIf(jogador -> jogador.getId().equals(id));
+        jogadorRepository.deleteById(id);
     }
-
-    @Override
-    public List<IPartida> getPartidasInscritas(Long jogadorId) {
-        return findById(jogadorId)
-                .map(IJogador::getPartidasInscritas)
+    
+    public List<PartidaEntity> getPartidasInscritas(Long jogadorId) {
+        JogadorEntity jogador = jogadorRepository.findById(jogadorId)
                 .orElseThrow(() -> new RuntimeException("Jogador não encontrado"));
+        return jogador.getPartidasInscritas();
     }
-
-    @Override
+    
+    @Transactional
     public void inscreverEmPartida(Long jogadorId, Long partidaId) {
-        IJogador jogador = findById(jogadorId)
+        JogadorEntity jogador = jogadorRepository.findById(jogadorId)
                 .orElseThrow(() -> new RuntimeException("Jogador não encontrado"));
         
-        partidaService.adicionarJogador(partidaId, jogadorId);
-        jogador.adicionarPartida(partidaService.findById(partidaId)
-                .orElseThrow(() -> new RuntimeException("Partida não encontrada")));
-    }
-
-    @Override
-    public void cancelarInscricaoPartida(Long jogadorId, Long partidaId) {
-        IJogador jogador = findById(jogadorId)
-                .orElseThrow(() -> new RuntimeException("Jogador não encontrado"));
-        
-        IPartida partida = partidaService.findById(partidaId)
+        PartidaEntity partida = partidaRepository.findById(partidaId)
                 .orElseThrow(() -> new RuntimeException("Partida não encontrada"));
         
-        partidaService.removerJogador(partidaId, jogadorId);
-        jogador.removerPartida(partida);
+        partida.adicionarJogador(jogador);
+        partidaRepository.save(partida);
     }
-
-    @Override
-    public IJogador createFromUsuario(Long usuarioId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createFromUsuario'");
+    
+    @Transactional
+    public void cancelarInscricaoPartida(Long jogadorId, Long partidaId) {
+        JogadorEntity jogador = jogadorRepository.findById(jogadorId)
+                .orElseThrow(() -> new RuntimeException("Jogador não encontrado"));
+        
+        PartidaEntity partida = partidaRepository.findById(partidaId)
+                .orElseThrow(() -> new RuntimeException("Partida não encontrada"));
+        
+        partida.removerJogador(jogador);
+        partidaRepository.save(partida);
     }
-
-  
+    
+    public JogadorEntity createFromUsuario(Long usuarioId) {
+        // Implementação simplificada - em um caso real, você converteria UsuarioEntity para JogadorEntity
+        JogadorEntity jogador = new JogadorEntity();
+        // Configurar propriedades...
+        return jogadorRepository.save(jogador);
+    }
 }

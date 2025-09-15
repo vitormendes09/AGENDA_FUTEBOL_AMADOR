@@ -1,107 +1,73 @@
 package br.edu.iff.com.agenda_futebol_amador.services;
 
-import org.springframework.stereotype.Service;
-import org.springframework.context.annotation.Lazy;
-import br.edu.iff.com.agenda_futebol_amador.contracts.entities.IPartida;
-import br.edu.iff.com.agenda_futebol_amador.contracts.entities.IJogador;
-import br.edu.iff.com.agenda_futebol_amador.contracts.services.IJogadorService;
-import br.edu.iff.com.agenda_futebol_amador.contracts.services.IPartidaService;
+import br.edu.iff.com.agenda_futebol_amador.dto.PartidaDTO;
+import br.edu.iff.com.agenda_futebol_amador.entities.JogadorEntity;
 import br.edu.iff.com.agenda_futebol_amador.entities.PartidaEntity;
-import java.util.ArrayList;
+import br.edu.iff.com.agenda_futebol_amador.repository.JogadorRepository;
+import br.edu.iff.com.agenda_futebol_amador.repository.PartidaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 
 @Service
-public class PartidaService implements IPartidaService {
-
-    private final List<IPartida> partidas = new ArrayList<>();
-    private final AtomicLong idCounter = new AtomicLong(1);
-    private final IJogadorService jogadorService;
-
-    // Use @Lazy para quebrar a dependência circular
-    public PartidaService(@Lazy IJogadorService jogadorService) {
-        this.jogadorService = jogadorService;
-    }
-
+public class PartidaService {
     
-    @Override
-    public List<IPartida> findAll() {
-        return new ArrayList<>(partidas);
+    @Autowired
+    private PartidaRepository partidaRepository;
+    
+    @Autowired
+    private JogadorRepository jogadorRepository;
+    
+    public List<PartidaEntity> findAll() {
+        return partidaRepository.findAll();
     }
-
-    @Override
-    public Optional<IPartida> findById(Long id) {
-        return partidas.stream()
-                .filter(partida -> partida.getId().equals(id))
-                .findFirst();
+    
+    public Optional<PartidaEntity> findById(Long id) {
+        return partidaRepository.findById(id);
     }
-
-    @Override
-    public IPartida save(IPartida partida) {
-        if (partida.getId() == null) {
-            if (partida instanceof PartidaEntity) {
-                ((PartidaEntity) partida).setId(idCounter.getAndIncrement());
-            }
-            partidas.add(partida);
-            return partida;
-        } else {
-            return findById(partida.getId())
-                    .map(existing -> {
-                        existing.setNome(partida.getNome());
-                        existing.setData(partida.getData());
-                        existing.setHora(partida.getHora());
-                        existing.setCidade(partida.getCidade());
-                        existing.setValor(partida.getValor());
-                        existing.setNumeroJogadores(partida.getNumeroJogadores());
-                        existing.setStatus(partida.getStatus());
-                        return existing;
-                    })
-                    .orElseThrow(() -> new RuntimeException("Partida não encontrada"));
-        }
+    
+    public List<PartidaEntity> findByCidade(String cidade) {
+        return partidaRepository.findByCidade(cidade);
     }
-
-    @Override
-    public void deleteById(Long id) {
-        partidas.removeIf(partida -> partida.getId().equals(id));
+    
+    public List<PartidaEntity> findByOrganizador(Long organizadorId) {
+        return partidaRepository.findByOrganizadorId(organizadorId);
     }
-
-    @Override
-    public List<IPartida> findByCidade(String cidade) {
-        return partidas.stream()
-                .filter(partida -> partida.getCidade().equalsIgnoreCase(cidade))
-                .collect(Collectors.toList());
+    
+    public List<PartidaEntity> findPartidasDisponiveis() {
+        return partidaRepository.findPartidasDisponiveis();
     }
-
-    @Override
-    public List<IPartida> findByOrganizador(Long organizadorId) {
-        return partidas.stream()
-                .filter(partida -> partida.getOrganizador() != null && 
-                                  partida.getOrganizador().getId().equals(organizadorId))
-                .collect(Collectors.toList());
+    
+    public List<PartidaEntity> findPartidasPublicas() {
+        return partidaRepository.findPartidasPublicasDisponiveis();
     }
-
-    @Override
-    public List<IPartida> findPartidasDisponiveis() {
-        return partidas.stream()
-                .filter(partida -> partida.getJogadores().size() < partida.getNumeroJogadores())
-                .collect(Collectors.toList());
+    
+    @Transactional
+    public PartidaEntity criarPartida(PartidaDTO partidaDTO) {
+        JogadorEntity organizador = jogadorRepository.findById(partidaDTO.getOrganizadorId())
+                .orElseThrow(() -> new RuntimeException("Organizador não encontrado"));
+        
+        PartidaEntity partida = new PartidaEntity();
+        partida.setNome(partidaDTO.getNome());
+        partida.setData(partidaDTO.getData());
+        partida.setHora(partidaDTO.getHora());
+        partida.setCidade(partidaDTO.getCidade());
+        partida.setValor(partidaDTO.getValor());
+        partida.setNumeroJogadores(partidaDTO.getNumeroJogadores());
+        partida.setStatus(partidaDTO.getStatus());
+        partida.setOrganizador(organizador);
+        
+        return partidaRepository.save(partida);
     }
-
-    @Override
-    public List<IPartida> findPartidasPublicas() {
-        return partidas.stream()
-                .filter(partida -> "PUBLICA".equals(partida.getStatus()))
-                .collect(Collectors.toList());
-    }
-
-    @Override
+    
+    @Transactional
     public void adicionarJogador(Long partidaId, Long jogadorId) {
-        IPartida partida = findById(partidaId)
+        PartidaEntity partida = partidaRepository.findById(partidaId)
                 .orElseThrow(() -> new RuntimeException("Partida não encontrada"));
         
-        IJogador jogador = jogadorService.findById(jogadorId)
+        JogadorEntity jogador = jogadorRepository.findById(jogadorId)
                 .orElseThrow(() -> new RuntimeException("Jogador não encontrado"));
         
         if (partida.getJogadores().size() >= partida.getNumeroJogadores()) {
@@ -109,30 +75,30 @@ public class PartidaService implements IPartidaService {
         }
         
         partida.adicionarJogador(jogador);
+        partidaRepository.save(partida);
     }
-
-    @Override
+    
+    @Transactional
     public void removerJogador(Long partidaId, Long jogadorId) {
-        IPartida partida = findById(partidaId)
+        PartidaEntity partida = partidaRepository.findById(partidaId)
                 .orElseThrow(() -> new RuntimeException("Partida não encontrada"));
         
-        IJogador jogador = jogadorService.findById(jogadorId)
+        JogadorEntity jogador = jogadorRepository.findById(jogadorId)
                 .orElseThrow(() -> new RuntimeException("Jogador não encontrado"));
         
         partida.removerJogador(jogador);
+        partidaRepository.save(partida);
     }
-
-    @Override
+    
     public boolean isJogadorInscrito(Long partidaId, Long jogadorId) {
-        return findById(partidaId)
+        return partidaRepository.findById(partidaId)
                 .map(partida -> partida.getJogadores().stream()
                         .anyMatch(jogador -> jogador.getId().equals(jogadorId)))
                 .orElse(false);
     }
-
-    @Override
+    
     public int getVagasDisponiveis(Long partidaId) {
-        return findById(partidaId)
+        return partidaRepository.findById(partidaId)
                 .map(partida -> partida.getNumeroJogadores() - partida.getJogadores().size())
                 .orElse(0);
     }

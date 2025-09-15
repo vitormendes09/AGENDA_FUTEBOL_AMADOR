@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @EntityScan("br.edu.iff.com.agenda_futebol_amador.entities")
-@EnableJpaRepositories("br.edu.iff.com.agenda_futebol_amador.repositories")
+@EnableJpaRepositories("br.edu.iff.com.agenda_futebol_amador.repository")
 public class AgendaFutebolAmadorApplication {
 
     public static void main(String[] args) {

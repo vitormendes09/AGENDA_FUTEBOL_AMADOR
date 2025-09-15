@@ -1,6 +1,5 @@
 package br.edu.iff.com.agenda_futebol_amador.entities;
 
-import br.edu.iff.com.agenda_futebol_amador.contracts.entities.IUsuario;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
@@ -16,8 +15,8 @@ public class AdministradorEntity extends UsuarioEntity {
         super(nome, email, senha);
     }
 
-    // Construtor que recebe IUsuario
-    public AdministradorEntity(IUsuario usuario) {
+
+    public AdministradorEntity(UsuarioEntity usuario) {
         super(usuario.getNome(), usuario.getEmail(), usuario.getSenha());
         this.setId(usuario.getId());
     }
