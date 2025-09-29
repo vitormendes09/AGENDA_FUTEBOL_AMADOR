@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">Partidas</title>
+</head>
+<body>
+    <header>
+        <h1>Gerenciamento de Partidas</h1>
+        <nav>
+            <a th:href="@{/}">Home</a> |
+            <a th:href="@{/partidas}">Partidas</a> |
+            <a th:href="@{/usuarios}">Usuários</a> |
+            <a th:href="@{/partidas/minhas-partidas}">Minhas Partidas</a>
+        </nav>
+        <p>Usuário: <span th:text="${userName}">Usuário</span></p>
+    </header>
+
+    <main>
+        <!-- Formulário para criar/editar partida -->
+        <section style="margin-bottom: 30px; padding: 20px; border: 1px solid #ccc;">
+            <h2 th:text="${item.id != null} ? 'Editar Partida' : 'Criar Nova Partida'">
+                Criar Nova Partida
+            </h2>
+            
+            <form th:action="@{/partidas/save}" th:object="${item}" method="post">
+                <input type="hidden" th:field="*{id}" />
+                
+                <div style="margin-bottom: 10px;">
+                    <label>Título:</label><br>
+                    <input type="text" th:field="*{titulo}" required 
+                           style="width: 300px; padding: 5px;" 
+                           placeholder="Digite o título da partida">
+                    <div th:if="${#fields.hasErrors('titulo')}" style="color: red;">
+                        <span th:errors="*{titulo}">Erro no título</span>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 10px;">
+                    <label>Descrição:</label><br>
+                    <textarea th:field="*{descricao}" required 
+                              style="width: 300px; height: 80px; padding: 5px;" 
+                              placeholder="Descreva a partida"></textarea>
+                    <div th:if="${#fields.hasErrors('descricao')}" style="color: red;">
+                        <span th:errors="*{descricao}">Erro na descrição</span>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 10px;">
+                    <label>Data e Hora:</label><br>
+                    <input type="datetime-local" th:field="*{dataHora}" required 
+                           style="padding: 5px;">
+                    <div th:if="${#fields.hasErrors('dataHora')}" style="color: red;">
+                        <span th:errors="*{dataHora}">Erro na data/hora</span>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 10px;">
+                    <label>Local:</label><br>
+                    <input type="text" th:field="*{local}" required 
+                           style="width: 300px; padding: 5px;" 
+                           placeholder="Local da partida">
+                    <div th:if="${#fields.hasErrors('local')}" style="color: red;">
+                        <span th:errors="*{local}">Erro no local</span>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 10px;">
+                    <label>Máximo de Jogadores:</label><br>
+                    <input type="number" th:field="*{maxJogadores}" required min="2" max="50"
+                           style="width: 100px; padding: 5px;">
+                    <div th:if="${#fields.hasErrors('maxJogadores')}" style="color: red;">
+                        <span th:errors="*{maxJogadores}">Erro no número de jogadores</span>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 15px;">
+                    <input type="hidden" name="nome" th:value="${userName}">
+                    <button type="submit" 
+                            style="padding: 8px 15px; background: #007bff; color: white; border: none; border-radius: 3px;">
+                        <span th:text="${item.id != null} ? 'Atualizar Partida' : 'Criar Partida'">
+                            Criar Partida
+                        </span>
+                    </button>
+                    <a th:href="@{/partidas(nome=${userName})}" 
+                       style="padding: 8px 15px; background: #6c757d; color: white; text-decoration: none; border-radius: 3px; margin-left: 10px;">
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+        </section>
+
+        <!-- Lista de Partidas -->
+        <section>
+            <h2>Partidas Cadastradas</h2>
+            
+            <div th:if="${partidas.empty}">
+                <p>Nenhuma partida cadastrada.</p>
+            </div>
+            
+            <div th:unless="${partidas.empty}">
+                <table border="1" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #f8f9fa;">
+                            <th style="padding: 10px; text-align: left;">Título</th>
+                            <th style="padding: 10px; text-align: left;">Data/Hora</th>
+                            <th style="padding: 10px; text-align: left;">Local</th>
+                            <th style="padding: 10px; text-align: center;">Jogadores</th>
+                            <th style="padding: 10px; text-align: left;">Status</th>
+                            <th style="padding: 10px; text-align: center;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="partida : ${partidas}">
+                            <td style="padding: 10px;">
+                                <strong th:text="${partida.titulo}">Título</strong><br>
+                                <small th:text="${partida.descricao}">Descrição</small>
+                            </td>
+                            <td style="padding: 10px;" th:text="${#temporals.format(partida.dataHora, 'dd/MM/yyyy HH:mm')}">
+                                Data/Hora
+                            </td>
+                            <td style="padding: 10px;" th:text="${partida.local}">Local</td>
+                            <td style="padding: 10px; text-align: center;">
+                                <span th:text="|${partida.jogadoresAtuais}/${partida.maxJogadores}|">
+                                    Jogadores
+                                </span>
+                            </td>
+                            <td style="padding: 10px;" th:text="${partida.status}">Status</td>
+                            <td style="padding: 10px;" th:text="${partida.criador.nome}">Criador</td>
+                            <td style="padding: 10px; text-align: center;">
+                                <a th:href="@{/partidas/inscrever/{id}(id=${partida.id}, nome=${userName})}" 
+                                   style="color: #007bff; text-decoration: none; margin-right: 10px;"
+                                   th:if="${partida.jogadoresAtuais < partida.maxJogadores}">
+                                   Inscrever
+                                </a>
+                                <a th:href="@{/partidas/delete/{id}(id=${partida.id}, nome=${userName})}" 
+                                   style="color: #dc3545; text-decoration: none;"
+                                   onclick="return confirm('Tem certeza que deseja excluir esta partida?')">
+                                   Excluir
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer style="margin-top: 50px; padding: 20px; border-top: 1px solid #ccc;">
+        <p>
+            <a th:href="@{/}" style="color: #007bff; text-decoration: none;">
+                ← Voltar para Home
+            </a>
+        </p>
+    </footer>
+</body>
+</html>

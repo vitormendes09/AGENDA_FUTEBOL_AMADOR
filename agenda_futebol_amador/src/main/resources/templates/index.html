@@ -1,73 +1,69 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{base :: html}">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:with="title='Home'"></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">Agenda Futebol Amador</title>
 </head>
 <body>
-    <div th:fragment="content">
-        <div class="jumbotron bg-light p-5 rounded">
-            <h1 class="display-4">⚽ Agenda Futebol Amador</h1>
-            <p class="lead">Encontre e organize partidas de futebol na sua cidade de forma simples e rápida!</p>
-            <hr class="my-4">
-            <p>Não precisa de cadastro. Crie partidas e participe quando quiser!</p>
-            <div class="mt-4">
-                <a th:href="@{/partidas}" class="btn btn-primary btn-lg me-3">Ver Partidas</a>
-                <a th:href="@{/partidas/nova}" class="btn btn-success btn-lg">Criar Partida</a>
-            </div>
-        </div>
+    <header>
+        <h1>Agenda Futebol Amador</h1>
+        <nav>
+            <a th:href="@{/}">Home</a> |
+            <a th:href="@{/partidas}">Partidas</a> |
+            <a th:href="@{/usuarios}">Usuários</a>
+        </nav>
+    </header>
 
-        <div class="row mt-5">
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">🎯 Crie Partidas</h5>
-                        <p class="card-text">Organize jogos com amigos e defina local, data e valor.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">🔍 Encontre Jogos</h5>
-                        <p class="card-text">Encontre partidas perto de você e participe.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">👥 Conecte-se</h5>
-                        <p class="card-text">Jogue com novas pessoas e faça parte da comunidade.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <main>
+        <section>
+            <h2>Bem-vindo ao Sistema de Agenda de Futebol Amador!</h2>
+            
+            <article>
+                <h3>Sobre o Sistema</h3>
+                <p>Este sistema foi desenvolvido para facilitar a organização de partidas de futebol amador.</p>
+                <p>Com esta aplicação, você pode:</p>
+                <ul>
+                    <li>Criar e gerenciar partidas de futebol</li>
+                    <li>Cadastrar e administrar usuários/jogadores</li>
+                    <li>Inscrever-se em partidas disponíveis</li>
+                    <li>Acompanhar o status das partidas</li>
+                    <li>Visualizar participantes das partidas</li>
+                </ul>
+            </article>
 
-        <!-- Partidas Recentes -->
-        <div class="mt-5">
-            <h3>Partidas Recentes</h3>
-            <div th:if="${partidas != null and !partidas.empty}">
-                <div class="row">
-                    <div th:each="partida : ${partidas}" class="col-md-6 mb-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title" th:text="${partida.nome}"></h5>
-                                <p class="card-text">
-                                    <strong>Local:</strong> <span th:text="${partida.cidade}"></span><br>
-                                    <strong>Data:</strong> <span th:text="${#temporals.format(partida.dataHora, 'dd/MM/yyyy HH:mm')}"></span><br>
-                                    <strong>Valor:</strong> R$ <span th:text="${partida.valor}"></span>
-                                </p>
-                                <a th:href="@{/partidas/{id}(id=${partida.id})}" class="btn btn-primary">Ver Detalhes</a>
-                            </div>
-                        </div>
-                    </div>
+            <article>
+                <h3>Como usar o sistema:</h3>
+                <ol>
+                    <li><strong>Cadastre os usuários</strong> na página de Usuários</li>
+                    <li><strong>Crie partidas</strong> na página de Partidas</li>
+                    <li><strong>Inscreva jogadores</strong> nas partidas disponíveis</li>
+                    <li><strong>Acompanhe</strong> o status e participantes</li>
+                </ol>
+            </article>
+
+            <div style="margin-top: 30px; padding: 20px; border: 1px solid #ccc;">
+                <h3>Acesse as funcionalidades:</h3>
+                <div style="display: flex; gap: 20px; margin-top: 15px;">
+                    <a th:href="@{/partidas}" 
+                       style="padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 5px;">
+                       Gerenciar Partidas
+                    </a>
+                    <a th:href="@{/usuarios}" 
+                       style="padding: 10px 20px; background: #28a745; color: white; text-decoration: none; border-radius: 5px;">
+                       Gerenciar Usuários
+                    </a>
                 </div>
             </div>
-            <div th:if="${partidas == null or partidas.empty}">
-                <p>Nenhuma partida disponível no momento. <a th:href="@{/partidas/nova}">Seja o primeiro a criar uma!</a></p>
-            </div>
-        </div>
-    </div>
+        </section>
+    </main>
+
+    <footer style="margin-top: 50px; padding: 20px; border-top: 1px solid #ccc;">
+        <p>Sistema Agenda Futebol Amador - Desenvolvido com Spring Boot e Thymeleaf</p>
+        <p>API Documentation: 
+            <a th:href="@{/swagger-ui/index.html}" target="_blank">Swagger UI</a> | 
+            <a th:href="@{/api-docs}" target="_blank">API Docs</a>
+        </p>
+    </footer>
 </body>
 </html>
