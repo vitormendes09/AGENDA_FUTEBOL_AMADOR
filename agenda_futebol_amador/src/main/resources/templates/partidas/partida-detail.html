@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: ~{::head}, ~{::body}}">
+<head>
+    <title th:fragment="baseHead('Detalhes da Partida')">Detalhes da Partida - Agenda Futebol Amador</title>
+</head>
+<body>
+    <div th:fragment="content">
+        <h2>Detalhes da Partida</h2>
+        
+        <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}"></div>
+        
+        <div th:if="${partida}">
+            <div class="form-group">
+                <label>Nome:</label>
+                <p th:text="${partida.nome}"></p>
+            </div>
+            
+            <div class="form-group">
+                <label>Cidade:</label>
+                <p th:text="${partida.cidade}"></p>
+            </div>
+            
+            <div class="form-group">
+                <label>Endereço:</label>
+                <p th:text="${partida.endereco}"></p>
+            </div>
+            
+            <div class="form-group">
+                <label>Data e Hora:</label>
+                <p th:text="${#temporals.format(partida.dataHora, 'dd/MM/yyyy HH:mm')}"></p>
+            </div>
+            
+            <div class="form-group">
+                <label>Valor:</label>
+                <p th:text="'R$ ' + ${partida.valor}"></p>
+            </div>
+            
+            <div class="form-group">
+                <label>Jogadores Inscritos:</label>
+                <p th:text="${partida.quantidadeJogadoresInscritos} + '/' + ${partida.maxJogadores}"></p>
+            </div>
+            
+            <div class="form-group">
+                <label>Status:</label>
+                <p th:text="${partida.status}"></p>
+            </div>
+            
+            <div class="form-group">
+                <label>Descrição:</label>
+                <p th:text="${partida.descricao} ?: 'Sem descrição'"></p>
+            </div>
+            
+            <div class="form-group">
+                <label>Criador:</label>
+                <p th:text="${partida.criador.nome}"></p>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <a th:href="@{/view/partidas}" class="btn">Voltar para Lista</a>
+                <a th:if="${partida.vagaDisponivel}" 
+                   th:href="@{/api/v1/inscricoes/partida/{id}(id=${partida.id})}" 
+                   class="btn btn-success">Inscrever-se</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
