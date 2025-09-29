@@ -13,8 +13,15 @@ public class HomeController {
         return "index";
     }
 
-    @GetMapping("/swagger-ui")
+    // Use um caminho diferente para evitar conflito
+    @GetMapping("/swagger")
     public String redirectToSwagger() {
         return "redirect:/swagger-ui/index.html";
     }
+    
+    @GetMapping("/api-docs")
+    public String redirectToApiDocs() {
+        return "redirect:/v3/api-docs";
+    }
+   
 }
