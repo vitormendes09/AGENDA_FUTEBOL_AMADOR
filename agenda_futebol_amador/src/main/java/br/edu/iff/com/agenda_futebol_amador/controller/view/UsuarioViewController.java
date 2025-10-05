@@ -97,4 +97,26 @@ public class UsuarioViewController {
         model.addAttribute("pageTitle", "Login");
         return "login";
     }
+
+    @PostMapping("/editar/save")
+    public String saveUsuarioEditado(@Validated @ModelAttribute("item") Usuario usuario, 
+                                   BindingResult result, 
+                                   @RequestParam(required = false) String nome, 
+                                   Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("pageTitle", "Editar Usuário");
+            model.addAttribute("userName", nome != null ? nome : "Administrador");
+            return "editar-usuario";
+        }
+        
+        try {
+            usuarioService.save(usuario);
+            return "redirect:/usuarios?nome=" + (nome != null ? nome : "Administrador");
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("pageTitle", "Editar Usuário");
+            model.addAttribute("userName", nome != null ? nome : "Administrador");
+            return "editar-usuario";
+        }
+    }
 }

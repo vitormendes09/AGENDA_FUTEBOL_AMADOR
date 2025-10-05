@@ -14,6 +14,7 @@ import br.edu.iff.com.agenda_futebol_amador.service.UsuarioService;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/partidas")
@@ -81,5 +82,76 @@ public class PartidaViewController {
         model.addAttribute("partidas", partidas);
         model.addAttribute("userName", nome != null ? nome : "Usuário");
         return "minhas-partidas";
+    }
+
+
+    @GetMapping("/editar/{id}")
+    public String editarPartida(@PathVariable Long id, 
+                               @RequestParam(required = false) String nome, 
+                               Model model) {
+        var partidaOpt = partidaService.findById(id);
+        if (partidaOpt.isPresent()) {
+            model.addAttribute("pageTitle", "Editar Partida");
+            model.addAttribute("item", partidaOpt.get());
+            model.addAttribute("userName", nome != null ? nome : "Administrador");
+            return "editar-partida";
+        }
+        return "redirect:/partidas";
+    }
+
+    @GetMapping("/gerenciar/{id}")
+    public String gerenciarPartida(@PathVariable Long id,
+                                  @RequestParam(required = false) String nome,
+                                  Model model) {
+        var partidaOpt = partidaService.findById(id);
+        if (partidaOpt.isPresent()) {
+            Partida partida = partidaOpt.get();
+            List<Usuario> todosUsuarios = usuarioService.findAll();
+            List<Usuario> usuariosInscritos = partida.getParticipantes();
+            List<Usuario> usuariosDisponiveis = todosUsuarios.stream()
+                    .filter(usuario -> !usuariosInscritos.contains(usuario))
+                    .collect(Collectors.toList());
+
+            model.addAttribute("pageTitle", "Gerenciar Partida");
+            model.addAttribute("partida", partida);
+            model.addAttribute("usuariosInscritos", usuariosInscritos);
+            model.addAttribute("usuariosDisponiveis", usuariosDisponiveis);
+            model.addAttribute("userName", nome != null ? nome : "Administrador");
+            return "gerenciar-partida";
+        }
+        return "redirect:/partidas";
+    }
+
+    @GetMapping("/{partidaId}/inscrever-usuario/{usuarioId}")
+    public String inscreverUsuarioNaPartida(@PathVariable Long partidaId,
+                                           @PathVariable Long usuarioId,
+                                           @RequestParam(required = false) String nome) {
+        boolean sucesso = partidaService.inscreverEmPartida(partidaId, usuarioId);
+        return "redirect:/partidas/gerenciar/" + partidaId + "?nome=" + (nome != null ? nome : "Administrador");
+    }
+
+    @GetMapping("/{partidaId}/remover-usuario/{usuarioId}")
+    public String removerUsuarioDaPartida(@PathVariable Long partidaId,
+                                         @PathVariable Long usuarioId,
+                                         @RequestParam(required = false) String nome) {
+        boolean sucesso = partidaService.cancelarInscricao(partidaId, usuarioId);
+        return "redirect:/partidas/gerenciar/" + partidaId + "?nome=" + (nome != null ? nome : "Administrador");
+    }
+
+    @GetMapping("/minhas-inscricoes")
+    public String minhasInscricoes(@RequestParam(required = false) String nome, Model model) {
+        // Mock - em sistema real, filtraria pelas partidas do usuário logado
+        // Por enquanto, vamos mostrar todas as partidas onde o usuário mock está inscrito
+        Long usuarioId = 1L; // Usuário mock
+        List<Partida> todasPartidas = partidaService.findAll();
+        List<Partida> partidasInscrito = todasPartidas.stream()
+                .filter(partida -> partida.getParticipantes().stream()
+                        .anyMatch(usuario -> usuario.getId().equals(usuarioId)))
+                .collect(Collectors.toList());
+
+        model.addAttribute("pageTitle", "Minhas Inscrições");
+        model.addAttribute("partidas", partidasInscrito);
+        model.addAttribute("userName", nome != null ? nome : "Jogador");
+        return "minhas-inscricoes";
     }
 }

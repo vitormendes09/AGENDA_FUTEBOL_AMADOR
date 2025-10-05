@@ -19,9 +19,5 @@ public class HomeController {
         return "redirect:/swagger-ui/index.html";
     }
     
-    @GetMapping("/api-docs")
-    public String redirectToApiDocs() {
-        return "redirect:/v3/api-docs";
-    }
-   
+  
 }

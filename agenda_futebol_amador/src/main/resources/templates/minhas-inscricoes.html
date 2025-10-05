@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">Minhas Inscrições</title>
+</head>
+<body>
+    <header>
+        <h1>Minhas Inscrições em Partidas</h1>
+        <nav>
+            <a th:href="@{/}">Home</a> |
+            <a th:href="@{/partidas}">Todas as Partidas</a> |
+            <a th:href="@{/usuarios}">Usuários</a> |
+            <a th:href="@{/usuarios/perfil}">Meu Perfil</a>
+        </nav>
+        <p>Usuário: <span th:text="${userName}">Jogador</span></p>
+    </header>
+
+    <main>
+        <section style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+            <div style="margin-bottom: 30px;">
+                <h2>Partidas que Estou Inscrito</h2>
+                <p>Aqui você pode visualizar todas as partidas nas quais está inscrito.</p>
+            </div>
+
+            <div th:if="${partidas.empty}">
+                <div style="padding: 40px; text-align: center; border: 2px dashed #ccc; border-radius: 5px;">
+                    <h3 style="color: #6c757d;">Nenhuma Inscrição Encontrada</h3>
+                    <p>Você não está inscrito em nenhuma partida no momento.</p>
+                    <a th:href="@{/partidas(nome=${userName})}" 
+                       style="display: inline-block; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; margin-top: 15px;">
+                       Ver Partidas Disponíveis
+                    </a>
+                </div>
+            </div>
+            
+            <div th:unless="${partidas.empty}">
+                <div style="display: grid; gap: 20px;">
+                    <div th:each="partida : ${partidas}" 
+                         style="border: 1px solid #ddd; border-radius: 8px; padding: 20px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        
+                        <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 15px;">
+                            <div style="flex: 1;">
+                                <h3 style="margin: 0 0 10px 0; color: #333;" th:text="${partida.titulo}">Título da Partida</h3>
+                                <p style="margin: 0 0 10px 0; color: #666;" th:text="${partida.descricao}">Descrição da partida</p>
+                            </div>
+                            <div style="text-align: right;">
+                                <span th:if="${partida.status == 'ABERTA'}" 
+                                      style="background: #28a745; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px;">
+                                      ABERTA
+                                </span>
+                                <span th:if="${partida.status == 'EM_ANDAMENTO'}" 
+                                      style="background: #ffc107; color: black; padding: 4px 8px; border-radius: 12px; font-size: 12px;">
+                                      EM ANDAMENTO
+                                </span>
+                                <span th:if="${partida.status == 'FINALIZADA'}" 
+                                      style="background: #6c757d; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px;">
+                                      FINALIZADA
+                                </span>
+                                <span th:if="${partida.status == 'CANCELADA'}" 
+                                      style="background: #dc3545; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px;">
+                                      CANCELADA
+                                </span>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                            <div>
+                                <strong> Data e Hora:</strong><br>
+                                <span th:text="${#temporals.format(partida.dataHora, 'dd/MM/yyyy HH:mm')}">Data/Hora</span>
+                            </div>
+                            <div>
+                                <strong> Local:</strong><br>
+                                <span th:text="${partida.local}">Local</span>
+                            </div>
+                            <div>
+                                <strong> Jogadores:</strong><br>
+                                <span th:text="|${partida.jogadoresAtuais}/${partida.maxJogadores}|">Jogadores</span>
+                            </div>
+                            <div>
+                                <strong> Criador:</strong><br>
+                                <span th:text="${partida.criador.nome}">Criador</span>
+                            </div>
+                        </div>
+
+                        <div style="border-top: 1px solid #eee; padding-top: 15px;">
+                            <h4 style="margin: 0 0 10px 0;">Participantes:</h4>
+                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                <span th:each="participante : ${partida.participantes}"
+                                      style="background: #e9ecef; padding: 4px 8px; border-radius: 15px; font-size: 12px;"
+                                      th:text="${participante.nome}">
+                                </span>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 15px; text-align: right;">
+                            <a th:href="@{/partidas/{partidaId}/cancelar-inscricao/{usuarioId}(partidaId=${partida.id}, usuarioId=1, nome=${userName})}" 
+                               style="padding: 6px 12px; background: #dc3545; color: white; text-decoration: none; border-radius: 3px; font-size: 14px;"
+                               onclick="return confirm('Tem certeza que deseja cancelar sua inscrição nesta partida?')">
+                               Cancelar Inscrição
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px; text-align: center;">
+                    <p th:text="'Total de partidas inscritas: ' + ${partidas.size()}"></p>
+                    <a th:href="@{/partidas(nome=${userName})}" 
+                       style="padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 5px;">
+                       Ver Mais Partidas
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer style="margin-top: 50px; padding: 20px; border-top: 1px solid #ccc; text-align: center;">
+        <p>Sistema Agenda Futebol Amador - Minhas Inscrições</p>
+    </footer>
+</body>
+</html>
