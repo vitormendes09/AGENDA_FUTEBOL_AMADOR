@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">Gerenciar Partida</title>
+</head>
+<body>
+    <header>
+        <h1>Gerenciar Partida</h1>
+        <nav>
+            <a th:href="@{/}">Home</a> |
+            <a th:href="@{/partidas}">Partidas</a> |
+            <a th:href="@{/usuarios}">Usuários</a> |
+            <a th:href="@{/partidas/minhas-inscricoes}">Minhas Inscrições</a>
+        </nav>
+        <p>Usuário: <span th:text="${userName}">Administrador</span></p>
+    </header>
+
+    <main>
+        <section style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+            <!-- Cabeçalho da Partida -->
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 5px; margin-bottom: 30px;">
+                <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 10px;">
+                    <h2 style="margin: 0;" th:text="'Partida: ' + ${partida.titulo}">Partida: Nome da Partida</h2>
+                    <a th:href="@{/partidas/editar/{id}(id=${partida.id}, nome=${userName})}" 
+                       style="padding: 5px 10px; background: #6c757d; color: white; text-decoration: none; border-radius: 3px; font-size: 14px;">
+                       Editar Partida
+                    </a>
+                </div>
+                <p style="margin: 0 0 10px 0; color: #666;" th:text="${partida.descricao}">Descrição</p>
+                <div style="display: flex; gap: 20px; font-size: 14px;">
+                    <span><strong>Data:</strong> <span th:text="${#temporals.format(partida.dataHora, 'dd/MM/yyyy HH:mm')}"></span></span>
+                    <span><strong>Local:</strong> <span th:text="${partida.local}"></span></span>
+                    <span><strong>Vagas:</strong> <span th:text="|${partida.jogadoresAtuais}/${partida.maxJogadores}|"></span></span>
+                    <span><strong>Status:</strong> <span th:text="${partida.status}"></span></span>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                <!-- Coluna 1: Usuários Inscritos -->
+                <div style="border: 1px solid #ddd; border-radius: 5px; padding: 20px; background: white;">
+                    <h3 style="margin-top: 0; color: #28a745;">
+                        👥 Usuários Inscritos na Partida
+                        <span style="background: #28a745; color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin-left: 10px;"
+                              th:text="${usuariosInscritos.size}">
+                        </span>
+                    </h3>
+                    
+                    <div th:if="${usuariosInscritos.empty}">
+                        <p style="color: #6c757d; text-align: center; padding: 20px;">
+                            Nenhum usuário inscrito nesta partida.
+                        </p>
+                    </div>
+                    
+                    <div th:unless="${usuariosInscritos.empty}">
+                        <div style="max-height: 500px; overflow-y: auto;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background: #f8f9fa;">
+                                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Nome</th>
+                                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Posição</th>
+                                        <th style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">Nível</th>
+                                        <th style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="usuario : ${usuariosInscritos}">
+                                        <td style="padding: 10px; border-bottom: 1px solid #eee;">
+                                            <strong th:text="${usuario.nome}">Nome</strong><br>
+                                            <small style="color: #666;" th:text="${usuario.email}">Email</small>
+                                        </td>
+                                        <td style="padding: 10px; border-bottom: 1px solid #eee;" th:text="${usuario.posicao} ?: 'Não informada'">Posição</td>
+                                        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #eee;" th:text="${usuario.nivelHabilidade} ?: '-'">Nível</td>
+                                        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #eee;">
+                                            <a th:href="@{/partidas/{partidaId}/remover-usuario/{usuarioId}(partidaId=${partida.id}, usuarioId=${usuario.id}, nome=${userName})}" 
+                                               style="color: #dc3545; text-decoration: none; font-size: 12px;"
+                                               onclick="return confirm('Remover ' + $(this).closest('tr').find('strong').text() + ' da partida?')">
+                                               Remover
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coluna 2: Usuários Disponíveis -->
+                <div style="border: 1px solid #ddd; border-radius: 5px; padding: 20px; background: white;">
+                    <h3 style="margin-top: 0; color: #007bff;">
+                        📋 Usuários Disponíveis
+                        <span style="background: #007bff; color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin-left: 10px;"
+                              th:text="${usuariosDisponiveis.size}">
+                        </span>
+                    </h3>
+                    
+                    <div th:if="${usuariosDisponiveis.empty}">
+                        <p style="color: #6c757d; text-align: center; padding: 20px;">
+                            Todos os usuários já estão inscritos nesta partida.
+                        </p>
+                    </div>
+                    
+                    <div th:unless="${usuariosDisponiveis.empty}">
+                        <div style="max-height: 500px; overflow-y: auto;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background: #f8f9fa;">
+                                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Nome</th>
+                                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Posição</th>
+                                        <th style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">Nível</th>
+                                        <th style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="usuario : ${usuariosDisponiveis}">
+                                        <td style="padding: 10px; border-bottom: 1px solid #eee;">
+                                            <strong th:text="${usuario.nome}">Nome</strong><br>
+                                            <small style="color: #666;" th:text="${usuario.email}">Email</small>
+                                        </td>
+                                        <td style="padding: 10px; border-bottom: 1px solid #eee;" th:text="${usuario.posicao} ?: 'Não informada'">Posição</td>
+                                        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #eee;" th:text="${usuario.nivelHabilidade} ?: '-'">Nível</td>
+                                        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #eee;">
+                                            <a th:href="@{/partidas/{partidaId}/inscrever-usuario/{usuarioId}(partidaId=${partida.id}, usuarioId=${usuario.id}, nome=${userName})}" 
+                                               style="padding: 4px 8px; background: #28a745; color: white; text-decoration: none; border-radius: 3px; font-size: 12px;"
+                                               th:if="${partida.jogadoresAtuais < partida.maxJogadores}">
+                                               Inscrever
+                                            </a>
+                                            <span th:unless="${partida.jogadoresAtuais < partida.maxJogadores}"
+                                                  style="color: #6c757d; font-size: 12px;">
+                                                  Lotada
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; text-align: center;">
+                <a th:href="@{/partidas(nome=${userName})}" 
+                   style="padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 5px;">
+                   ← Voltar para Partidas
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer style="margin-top: 50px; padding: 20px; border-top: 1px solid #ccc; text-align: center;">
+        <p>Sistema Agenda Futebol Amador - Gerenciamento de Partidas</p>
+    </footer>
+
+    <script>
+        // Função para melhorar a confirmação de remoção
+        document.addEventListener('DOMContentLoaded', function() {
+            const removeLinks = document.querySelectorAll('a[onclick*="confirm"]');
+            removeLinks.forEach(link => {
+                link.onclick = function(e) {
+                    const userName = this.closest('tr').querySelector('strong').textContent;
+                    return confirm('Tem certeza que deseja remover ' + userName + ' da partida?');
+                };
+            });
+        });
+    </script>
+</body>
+</html>
